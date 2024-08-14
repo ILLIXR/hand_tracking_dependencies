@@ -25,33 +25,38 @@ target_include_directories(ml_dtypes INTERFACE
                            $<INSTALL_INTERFACE:include/ml_dtypes>
 )
 include(GNUInstallDirs)
+
+install(
+    TARGETS ml_dtypes
+    EXPORT ml_dtypesTargets
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(
+    DIRECTORY ${CMAKE_SOURCE_DIR}/ml_dtypes
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(
+        EXPORT ml_dtypesTargets
+        FILE ml_dtypesTargets.cmake
+        DESTINATION lib/cmake/ml_dtypes
+        NAMESPACE ml_dtypes::
+)
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
         "${CMAKE_BINARY_DIR}/ml_dtypesConfigVersion.cmake"
         VERSION 1.1.0
         COMPATIBILITY AnyNewerVersion
 )
-configure_file(
+configure_package_config_file(
         "${CMAKE_SOURCE_DIR}/ml_dtypesConfig.cmake.in"
         "${CMAKE_BINARY_DIR}/ml_dtypesConfig.cmake"
-        @ONLY
+        INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/ml_dtypes"
 )
 install(
         FILES "${CMAKE_BINARY_DIR}/ml_dtypesConfig.cmake" "${CMAKE_BINARY_DIR}/ml_dtypesConfigVersion.cmake"
         DESTINATION lib/cmake/ml_dtypes
-        COMPONENT Devel
-)
-
-install(
-    TARGETS ml_dtypes
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
-message("X")
-message("${CMAKE_INSTALL_LIBDIR}   V")
-message("${CMAKE_INSTALL_INCLUDEDIR}   C")
-install(
-    DIRECTORY ${CMAKE_SOURCE_DIR}/ml_dtypes
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
