@@ -28,18 +28,7 @@ else()
             URL_HASH SHA256=5f4dabc2ae21e1f537425d58a49cdca1c49ea11db0d6271e2a4b27e9697548eb
             PREFIX "${CMAKE_BINARY_DIR}/${EPA}"
             DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+            PATCH_COMMAND patch -p0 -N --input=${CMAKE_SOURCE_DIR}/cmake/fft2d/fft2d.patch
             CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
     )
-    ExternalProject_Add_StepTargets(fft2d download configure)
-    ExternalProject_Add_Step(
-            fft2d
-            preconfig
-            COMMAND cp ${CMAKE_SOURCE_DIR}/cmake/${EPA}/CMakeLists.txt ${CMAKE_BINARY_DIR}/${EPA}/src/${EPA}/CMakeLists.txt
-            COMMAND cp ${CMAKE_SOURCE_DIR}/cmake/${EPA}/fft2dConfig.cmake.in ${CMAKE_BINARY_DIR}/${EPA}/src/${EPA}/fft2dConfig.cmake.in
-            COMMAND cp ${CMAKE_SOURCE_DIR}/cmake/${EPA}/fft2d.h ${CMAKE_BINARY_DIR}/${EPA}/src/${EPA}/fft2d.h
-            COMMAND cp ${CMAKE_SOURCE_DIR}/cmake/${EPA}/fft.h ${CMAKE_BINARY_DIR}/${EPA}/src/${EPA}/fft.h
-            DEPENDEES download
-            DEPENDERS configure
-    )
-
 endif()
