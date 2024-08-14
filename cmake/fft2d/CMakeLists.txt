@@ -49,28 +49,34 @@ add_library(fft2d ALIAS fft2d_fftsg2d)
 
 set_target_properties(fft2d_fftsg2d PROPERTIES PUBLIC_HEADER fft2d.h)
 
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file(
-        "${CMAKE_BINARY_DIR}/fft2dConfigVersion.cmake"
-        VERSION 2.0.0
-        COMPATIBILITY AnyNewerVersion
-)
-configure_file(
-        "${CMAKE_SOURCE_DIR}/fft2dConfig.cmake.in"
-        "${CMAKE_BINARY_DIR}/fft2dConfig.cmake"
-        @ONLY
-)
-
-
+include(GNUInstallDirs)
 install(
         TARGETS fft2d_fftsg2d fft2d_alloc fft2d_fftsg fft2d_fft4f2d fft2d_fftsg3d fft2d_shrtdct
+        EXPORT fft2dTargets
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
 install(
+        EXPORT fft2dTargets
+        FILE fft2dTargets.cmake
+        DESTINATION lib/cmake/fft2d
+        NAMESPACE fft2d::
+)
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+        "${CMAKE_BINARY_DIR}/fft2dConfigVersion.cmake"
+        VERSION 2.0.0
+        COMPATIBILITY AnyNewerVersion
+)
+configure_package_config_file(
+        "${CMAKE_SOURCE_DIR}/fft2dConfig.cmake.in"
+        "${CMAKE_BINARY_DIR}/fft2dConfig.cmake"
+        INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/fft2d"
+)
+
+install(
         FILES "${CMAKE_BINARY_DIR}/fft2dConfig.cmake" "${CMAKE_BINARY_DIR}/fft2dConfigVersion.cmake"
         DESTINATION lib/cmake/fft2d
-        COMPONENT Devel
 )
