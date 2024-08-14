@@ -1,6 +1,6 @@
 find_package(pthreadpool QUIET CONFIG)
 if(pthreadpool_FOUND)
-    report_found(pthreadpool ${pthreadpool_VERSION})
+    report_found(pthreadpool "${pthreadpool_VERSION}")
 else()
     report_build(pthreadpool)
     set(EPA pthreadpool)
