@@ -23,7 +23,7 @@ else()
             ${EPA}
             GIT_REPOSITORY https://github.com/ILLIXR/XNNPACK.git
             # Sync with tensorflow/workspace2.bzl
-            GIT_TAG ac04c9173056632b22d96ff4c117ba955e34c203
+            GIT_TAG 68c21ddb2e5d6d96adfa4e0afef61248288789e6
             GIT_PROGRESS TRUE
             PREFIX "${CMAKE_BINARY_DIR}/${EPA}"
             DOWNLOAD_EXTRACT_TIMESTAMP TRUE
