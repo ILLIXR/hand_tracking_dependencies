@@ -1,0 +1,97 @@
+--- CMakeLists.txt.orig	2023-08-29 01:35:24.000000000 -0500
++++ CMakeLists.txt	2024-08-13 15:49:33.836730387 -0500
+@@ -91,7 +91,10 @@
+ ENDIF()
+
+ ADD_LIBRARY(pthreadpool_interface INTERFACE)
+-TARGET_INCLUDE_DIRECTORIES(pthreadpool_interface INTERFACE include)
++TARGET_INCLUDE_DIRECTORIES(pthreadpool_interface INTERFACE
++                           $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
++                           $<INSTALL_INTERFACE:include>
++)
+ IF(NOT PTHREADPOOL_ALLOW_DEPRECATED_API)
+   TARGET_COMPILE_DEFINITIONS(pthreadpool_interface INTERFACE PTHREADPOOL_NO_DEPRECATED_API=1)
+ ENDIF()
+@@ -163,10 +166,35 @@
+ ENDIF()
+ TARGET_LINK_LIBRARIES(pthreadpool PRIVATE fxdiv)
+
+-INSTALL(TARGETS pthreadpool
++INSTALL(TARGETS pthreadpool pthreadpool_interface fxdiv
++  EXPORT pthreadpoolTargets
+   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
++install(
++        EXPORT pthreadpoolTargets
++        FILE pthreadpoolTargets.cmake
++        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/pthreadpool"
++        NAMESPACE pthreadpool::
++)
++
++include(CMakePackageConfigHelpers)
++write_basic_package_version_file(
++        ${CMAKE_BINARY_DIR}/pthreadpoolConfigVersion.cmake
++        VERSION 1.0.0
++        COMPATIBILITY AnyNewerVersion
++)
++
++configure_package_config_file(
++        ${CMAKE_SOURCE_DIR}/pthreadpoolConfig.cmake.in
++        ${CMAKE_BINARY_DIR}/pthreadpoolConfig.cmake
++        INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/pthreadpool"
++)
++install(
++        FILES "${CMAKE_BINARY_DIR}/pthreadpoolConfigVersion.cmake" "${CMAKE_BINARY_DIR}/pthreadpoolConfig.cmake"
++        DESTINATION lib/cmake/pthreadpool
++)
++
+ IF(PTHREADPOOL_BUILD_TESTS)
+   # ---[ Build google test
+   IF(NOT TARGET gtest)
+
+--- cmake/DownloadFXdiv.cmake.orig	2024-08-13 15:36:28.656706425 -0500
++++ cmake/DownloadFXdiv.cmake	2024-08-13 15:36:34.416706601 -0500
+@@ -8,6 +8,7 @@
+ 	GIT_TAG master
+ 	SOURCE_DIR "${CMAKE_BINARY_DIR}/FXdiv-source"
+ 	BINARY_DIR "${CMAKE_BINARY_DIR}/FXdiv"
++    PATCH_COMMAND patch -p0 -N --input=${CMAKE_SOURCE_DIR}/fxdiv.patch
+ 	CONFIGURE_COMMAND ""
+ 	BUILD_COMMAND ""
+ 	INSTALL_COMMAND ""
+
+--- /dev/null	2024-08-13 09:11:55.024002274 -0500
++++ pthreadpoolConfig.cmake.in	2024-08-13 14:35:17.792594399 -0500
+@@ -0,0 +1,13 @@
++
++@PACKAGE_INIT@
++
++include(FindPackageHandleStandardArgs)
++find_path(ptp_ROOT_DIR NAMES include/pthreadpool.h)
++set(PTHREADPOOL_ROOT_DIR ${ptp_ROOT_DIR})
++find_library(ptp_lib NAMES pthreadpool PATHS ${PTHREADPOOL_ROOT_DIR}/lib ${pthreadpool_LIB_PATH} @CMAKE_INSTALL_PREFIX@/lib)
++set(PTHREADPOOL_LIBRARIES ${ptp_lib})
++find_path(ptp_dirs NAMES pthreadpool.h PATHS ${PTHREADPOOL_ROOT_DIR}/include @CMAKE_INSTALL_PREFIX@/include)
++set(PTHREADPOOL_INCLUDE_DIRS ${ptp_dirs})
++find_package_handle_standard_args(pthreadpool DEFAULT_MSG PTHREADPOOL_LIBRARIES PTHREADPOOL_INCLUDE_DIRS)
++
++include("${CMAKE_CURRENT_LIST_DIR}/pthreadpoolTargets.cmake")
+
+--- /dev/null	2024-08-13 09:11:55.024002274 -0500
++++ fxdiv.patch	2024-08-13 15:41:48.600716189 -0500
+@@ -0,0 +1,14 @@
++--- CMakeLists.txt.orig	2024-08-13 15:30:57.320696314 -0500
+++++ CMakeLists.txt	2024-08-13 15:35:28.892704601 -0500
++@@ -43,7 +43,10 @@
++
++ # ---[ FXdiv library
++ ADD_LIBRARY(fxdiv INTERFACE)
++-TARGET_INCLUDE_DIRECTORIES(fxdiv INTERFACE include)
+++TARGET_INCLUDE_DIRECTORIES(fxdiv INTERFACE
+++                           $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+++                           $<INSTALL_INTERFACE:include>
+++)
++ IF(FXDIV_USE_INLINE_ASSEMBLY)
++   TARGET_COMPILE_DEFINITIONS(fxdiv INTERFACE FXDIV_USE_INLINE_ASSEMBLY=1)
++ ELSE()
