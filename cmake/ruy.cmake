@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-find_package(ruy CONFIG)
+find_package(ruy QUIET CONFIG)
 #get_cmake_property(_variableNames VARIABLES)
 #foreach (_variableName ${_variableNames})
 #    message(STATUS "${_variableName}=${${_variableName}}")
@@ -28,7 +28,7 @@ else()
             ${EPA}
             GIT_REPOSITORY https://github.com/ILLIXR/ruy.git
             # Sync with tensorflow/third_party/ruy/workspace.bzl
-            GIT_TAG 33a2293c23a94ebaf588d474e3933e8f997e5e34
+            GIT_TAG 650d86573bba9702d4c937b8fe7f2ae9f50ec20c
             GIT_PROGRESS TRUE
             PREFIX "${CMAKE_BINARY_DIR}/${EPA}"
             DOWNLOAD_EXTRACT_TIMESTAMP TRUE
