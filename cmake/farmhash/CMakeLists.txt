@@ -26,12 +26,34 @@ add_library(farmhash
             ${CMAKE_SOURCE_DIR}/src/farmhash.cc
             ${CMAKE_SOURCE_DIR}/src/farmhash.h
 )
-set_target_properties(farmhash PROPERTIES PUBLIC_HEADER ${CMAKE_SOURCE_DIR}/src/farmhash.h)
-target_include_directories(farmhash PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src> $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+set_target_properties(
+        farmhash
+        PROPERTIES PUBLIC_HEADER ${CMAKE_SOURCE_DIR}/src/farmhash.h
+)
+target_include_directories(
+        farmhash PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
 if(NOT FARMHASH_HAS_BUILTIN_EXPECT)
     target_compile_definitions(farmhash PUBLIC -DFARMHASH_NO_BUILTIN_EXPECT)
 endif()
 include(GNUInstallDirs)
+
+install(
+        TARGETS farmhash
+        EXPORT farmhashTargets
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(
+        EXPORT farmhashTargets
+        FILE farmhashTargets.cmake
+        DESTINATION lib/cmake/farmhash
+        NAMESPACE farmhash::
+)
 
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
@@ -39,10 +61,10 @@ write_basic_package_version_file(
         VERSION 1.1.0
         COMPATIBILITY SameMajorVersion
 )
-configure_file(
+configure_package_config_file(
         ${CMAKE_SOURCE_DIR}/farmhashConfig.cmake.in
         ${CMAKE_BINARY_DIR}/farmhashConfig.cmake
-        @ONLY
+        INSTALL_DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/farmhash"
 )
 install(
         FILES ${CMAKE_BINARY_DIR}/farmhashConfig.cmake
@@ -50,9 +72,3 @@ install(
         DESTINATION lib/cmake/farmhash
 )
 
-install(
-        TARGETS farmhash
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)

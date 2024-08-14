@@ -1,15 +1,5 @@
-if("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" LESS 2.8)
-   message(FATAL_ERROR "CMake >= 2.8.0 required")
-endif()
-if(CMAKE_VERSION VERSION_LESS "2.8.3")
-   message(FATAL_ERROR "CMake >= 2.8.3 required")
-endif()
-cmake_policy(PUSH)
-cmake_policy(VERSION 2.8.3...3.26)
 
-
-# Commands may need to know the format version.
-set(CMAKE_IMPORT_FILE_VERSION 1)
+@PACKAGE_INIT@
 
 include(FindPackageHandleStandardArgs)
 find_path(hash_ROOT_DIR NAMES include/farmhash.h)
@@ -20,9 +10,4 @@ find_path(include_dirs NAMES farmhash.h PATHS ${FARMHASH_ROOT_DIR}/include @CMAK
 set(FARMHASH_INCLUDE_DIRS ${include_dirs})
 find_package_handle_standard_args(farmhash DEFAULT_MSG FARMHASH_LIBRARIES FARMHASH_INCLUDE_DIRS)
 
-# This file does not depend on other imported targets which have
-# been exported from the same project but in a separate export set.
-
-# Commands beyond this point should not need to know the version.
-set(CMAKE_IMPORT_FILE_VERSION)
-cmake_policy(POP)
+include(${CMAKE_CURRENT_LIST_DIR}/farmhashTargets.cmake)
