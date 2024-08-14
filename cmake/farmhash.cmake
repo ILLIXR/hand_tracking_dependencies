@@ -19,7 +19,7 @@
 find_package(farmhash QUIET CONFIG)
 
 if(farmhash_FOUND)
-    report_found(farmhash ${farmhash_VERSION})
+    report_found(farmhash "${farmhash_VERSION}")
 else()
     report_build(farmhash)
     set(EPA farmhash)
@@ -36,15 +36,7 @@ else()
             GIT_PROGRESS TRUE
             PREFIX "${CMAKE_BINARY_DIR}/${EPA}"
             DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+            PATCH_COMMAND patch -p0 -N --input=${CMAKE_SOURCE_DIR}/cmake/farmhash/farmhash.patch
             CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-    )
-    ExternalProject_Add_StepTargets(farmhash download configure)
-    ExternalProject_Add_Step(
-            farmhash
-            preconfig
-            COMMAND cp ${CMAKE_SOURCE_DIR}/cmake/${EPA}/CMakeLists.txt ${CMAKE_BINARY_DIR}/${EPA}/src/${EPA}/CMakeLists.txt
-            COMMAND cp ${CMAKE_SOURCE_DIR}/cmake/${EPA}/${EPA}Config.cmake.in ${CMAKE_BINARY_DIR}/${EPA}/src/${EPA}/${EPA}Config.cmake.in
-            DEPENDEES download
-            DEPENDERS configure
     )
 endif()
