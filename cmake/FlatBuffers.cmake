@@ -31,28 +31,17 @@ else()
             GIT_PROGRESS TRUE
             PREFIX "${CMAKE_BINARY_DIR}/${EPA}"
             DOWNLOAD_EXTRACT_TIMESTAMP TRUE
-            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DFLATBUFFERS_BUILD_TESTS=OFF -DNOMINMAX=1
+            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DFLATBUFFERS_BUILD_TESTS=OFF -DCMAKE_CXX_FLAGS="-DNOMINMAX=1"
     )
     # For native flatc build purposes the flatc needs to be included in 'all' target
     if(NOT DEFINED FLATC_EXCLUDE_FROM_ALL)
         set(FLATC_EXCLUDE_FROM_ALL TRUE)
     endif()
 
-    # In case of a standalone (native) build of flatc for unit test cross-compilation
-    # purposes the FLATC_INSTALL_PREFIX is already in cache and is just used in this module.
-    # In case of standard flatbuffers build (as a dependency) the variable needs to be set.
-    if(NOT DEFINED FLATC_INSTALL_PREFIX)
-        set(FLATC_INSTALL_PREFIX <INSTALL_DIR> CACHE PATH "Flatc installation directory")
-    endif()
-
-    ExternalProject_Add(flatbuffers-flatc
-                        PREFIX ${CMAKE_BINARY_DIR}/flatbuffers-flatc
-                        CMAKE_ARGS -DCMAKE_CXX_FLAGS="-DNOMINMAX=1"
-                        -DFLATBUFFERS_BUILD_TESTS=OFF
-                        -DFLATBUFFERS_BUILD_FLATLIB=OFF
-                        -DFLATBUFFERS_STATIC_FLATC=OFF
-                        -DFLATBUFFERS_BUILD_FLATHASH=OFF
-                        -DCMAKE_INSTALL_PREFIX=$CACHE{FLATC_INSTALL_PREFIX}
-                        EXCLUDE_FROM_ALL ${FLATC_EXCLUDE_FROM_ALL}
+    add_custom_target(flatbuffers-flatc
+                      COMMAND ${CMAKE_COMMAND} -B ${CMAKE_BINARY_DIR}/flatbuffers-flatc -S ${CMAKE_BINARY_DIR}/${EPA}/src/${EPA} -DCMAKE_CXX_FLAGS="-DNOMINMAX=1" -DFLATBUFFERS_BUILD_TESTS=OFF -DFLATBUFFERS_BUILD_FLATLIB=OFF -DFLATBUFFERS_STATIC_FLATC=OFF -DFLATBUFFERS_BUILD_FLATHASH=OFF -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+                      COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}/flatbuffers-flatc
+                      COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR}/flatbuffers-flatc
     )
+    add_dependencies(flatbuffers-flatc flatbuffers)
 endif()
