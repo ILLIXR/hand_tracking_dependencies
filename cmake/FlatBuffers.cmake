@@ -44,4 +44,5 @@ else()
                       COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR}/flatbuffers-flatc
     )
     add_dependencies(flatbuffers-flatc flatbuffers)
+    list(APPEND TFL_DEPENDS flatbuffers-flatc)
 endif()

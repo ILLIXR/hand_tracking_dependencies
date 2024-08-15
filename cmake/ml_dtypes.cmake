@@ -38,4 +38,5 @@ else()
             PATCH_COMMAND ${CMAKE_SOURCE_DIR}/do_patch.sh -p ${CMAKE_SOURCE_DIR}/cmake/ml_dtypes/ml_dtypes.patch
             CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
     )
+    list(APPEND TFL_DEPENDS ${EPA})
 endif()
