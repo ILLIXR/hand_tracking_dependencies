@@ -10,11 +10,10 @@ endif()
 
 option(BUILD_STATIC "Build static libraries" ON)
 option(BUILD_SHARED "Build shared libraries" OFF)
-option(SYSTEM_FARMHASH "Use system farmhas if possible" ON)
 
 set(TFL_DEPENDS "")
 if(BUILD_STATIC AND BUILD_SHARED)
-    message(FATAL_ERROR "The syswtem cannot build both static and shared libraries currently, set only one of BUILD_STATIC or BUILD_SHARED to ON")
+    message(FATAL_ERROR "The system cannot build both static and shared libraries currently, set only one of BUILD_STATIC or BUILD_SHARED to ON")
 elseif(NOT BUILD_STATIC)
     set(BUILD_SHARED ON)
 endif()
