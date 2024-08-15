@@ -28,7 +28,7 @@ else()
             ${EPA}
             GIT_REPOSITORY https://github.com/ILLIXR/ruy.git
             # Sync with tensorflow/third_party/ruy/workspace.bzl
-            GIT_TAG 650d86573bba9702d4c937b8fe7f2ae9f50ec20c
+            GIT_TAG b7f1add8a9a65e4eb375e56313ef7d7a97f768c4
             GIT_PROGRESS TRUE
             PREFIX "${CMAKE_BINARY_DIR}/${EPA}"
             DOWNLOAD_EXTRACT_TIMESTAMP TRUE
