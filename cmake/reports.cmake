@@ -1,6 +1,6 @@
 macro (report_found NAME VERSION)
     set(msg "Found ${NAME}")
-    if(VERSION)
+    if(NOT "${VERSION}" STREQUAL "")
         set(msg "${msg}: ${VERSION}")
     endif()
     message(STATUS ${msg})

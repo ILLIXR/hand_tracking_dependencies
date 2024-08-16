@@ -14,7 +14,7 @@
 # limitations under the License.
 find_package(tfl-XNNPACK QUIET CONFIG)
 if(tfl-XNNPACK_FOUND)
-    report_found(tfl_XNNPACK ${tfl-XNNPACK_VERSION})
+    report_found(tfl_XNNPACK "${tfl-XNNPACK_VERSION}")
 else()
     report_build(tfl_XNNPACK)
     set(EPA tfl-XNNPACK)

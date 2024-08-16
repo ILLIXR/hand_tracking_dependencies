@@ -18,7 +18,7 @@
 find_package(ml_dtypes QUIET CONFIG)
 
 if(ml_dtypes_FOUND)
-    report_found(ml_dtypes "")
+    report_found(ml_dtypes "${ml_dtypes_VERSION}")
 else()
     report_build(ml_dtypes)
     set(EPA ml_dtypes)

@@ -17,7 +17,7 @@
 # installation and build from source instead.
 find_package(flatbuffers QUIET CONFIG)
 if(flatbuffers_FOUND)
-    report_found(flatbuffers ${flatbuffers_VERSION})
+    report_found(flatbuffers "${flatbuffers_VERSION}")
 else()
     report_build(flatbuffers)
     set(EPA flatbuffers)

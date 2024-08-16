@@ -17,9 +17,9 @@
 # system installation and build from source instead.
 find_package(absl QUIET CONFIG)
 if(absl_FOUND)
-    report_found(ABSL "")
+    report_found(abseil-cpp "${absl_VERSION}")
 else()
-    report_build(ABSL)
+    report_build(abseil-cpp)
     set(EPA abseil-cpp)
     ExternalProject_Add(
             ${EPA}

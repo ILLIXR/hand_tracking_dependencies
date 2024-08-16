@@ -18,7 +18,7 @@
 
 find_package(NEON_2_SSE QUIET CONFIG)
 if(NEON_2_SSE_FOUND)
-    report_found(neon2_sse ${NEON_2_SSE_VERSION})
+    report_found(neon2_sse "${NEON_2_SSE_VERSION}")
 else()
     report_build(neon_2_sse)
     set(EPA neon2sse)

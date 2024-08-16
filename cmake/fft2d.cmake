@@ -17,7 +17,7 @@
 # installation and build from source instead.
 find_package(fft2d QUIET CONFIG)
 if(fft2d_FOUND)
-    report_found(fft2d ${fft2d_VERSION})
+    report_found(fft2d "${fft2d_VERSION}")
 else()
     report_build(fft2d)
     set(EPA fft2d)
