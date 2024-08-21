@@ -19,7 +19,7 @@
 +# modified by ILLIXR
 +project(fft2d C)
 +
-+
++set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 +# fft2d doesn't have a CMake project so define it here transcribed from
 +# sample2d/Makefile.
 +
