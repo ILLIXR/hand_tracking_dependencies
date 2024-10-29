@@ -12,9 +12,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-find_package(tfl-XNNPACK QUIET CONFIG)
-if(tfl-XNNPACK_FOUND)
-    report_found(tfl_XNNPACK "${tfl-XNNPACK_VERSION}")
+
+find_package(tfl-XNNPACK${LIBRARY_POSTFIX} QUIET CONFIG)
+if(tfl-XNNPACK${LIBRARY_POSTFIX}_FOUND)
+    report_found(tfl_XNNPACK "${tfl-XNNPACK${LIBRARY_POSTFIX}_VERSION}")
 else()
     report_build(tfl_XNNPACK)
     set(EPA tfl-XNNPACK)
