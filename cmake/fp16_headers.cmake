@@ -17,18 +17,5 @@ if(fp16)
     report_found(fp16 "")
     set(fp16_headers_FOUND TRUE CACHE BOOL "")
 else()
-    report_build(fp16)
-    set(EPA fp16_headers)
-    ExternalProject_Add(
-            ${EPA}
-            GIT_REPOSITORY https://github.com/Maratyszcza/FP16
-            # Sync with https://github.com/google/XNNPACK/blob/master/cmake/DownloadFP16.cmake
-            GIT_TAG 0a92994d729ff76a58f692d3028ca1b64b145d91
-            GIT_PROGRESS TRUE
-            PREFIX "${CMAKE_BINARY_DIR}/${EPA}"
-            DOWNLOAD_EXTRACT_TIMESTAMP TRUE
-            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_CXX_FLAGS="-fPIC"
-    )
-    list(APPEND TFL_DEPENDS ${EPA})
-
+    message(FATAL_ERROR "Could not find required fp16 headers. Please install the libfp16-dev package.")
 endif()
