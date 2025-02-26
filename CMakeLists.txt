@@ -1,11 +1,10 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.22)
 
-if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.19)
-    cmake_policy(SET CMP0114 NEW)
-    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.24)
-        cmake_policy(SET CMP0135 NEW)
-    endif()
+cmake_policy(SET CMP0114 NEW)
+if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.24)
+    cmake_policy(SET CMP0135 NEW)
 endif()
+
 # Double colon in target name means ALIAS or IMPORTED target.
 cmake_policy(SET CMP0028 NEW)
 if(NOT CMAKE_BUILD_TYPE)

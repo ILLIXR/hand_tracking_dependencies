@@ -30,7 +30,6 @@ else()
             GIT_SHALLOW FALSE
             GIT_PROGRESS TRUE
             PREFIX "${CMAKE_BINARY_DIR}/${EPA}"
-            DOWNLOAD_EXTRACT_TIMESTAMP TRUE
             CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DFLATBUFFERS_BUILD_TESTS=OFF -DCMAKE_CXX_FLAGS="-fPIC"
     )
     # For native flatc build purposes the flatc needs to be included in 'all' target
