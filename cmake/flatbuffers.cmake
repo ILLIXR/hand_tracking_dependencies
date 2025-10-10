@@ -19,29 +19,41 @@ find_package(flatbuffers QUIET CONFIG)
 if(flatbuffers_FOUND)
     report_found(flatbuffers "${flatbuffers_VERSION}")
 else()
-    report_build(flatbuffers)
-    set(EPA flatbuffers)
-    ExternalProject_Add(
-            flatbuffers
-            GIT_REPOSITORY https://github.com/google/flatbuffers
-            # Sync with tensorflow/third_party/flatbuffers/workspace.bzl
-            GIT_TAG e6463926479bd6b330cbcf673f7e917803fd5831
-            # NOTE: b/340264458 - `GIT_SHALLOW TRUE` works for tag name only.
-            GIT_SHALLOW FALSE
-            GIT_PROGRESS TRUE
-            PREFIX "${CMAKE_BINARY_DIR}/${EPA}"
-            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DFLATBUFFERS_BUILD_TESTS=OFF -DCMAKE_CXX_FLAGS="-fPIC"
+    fetch_git(NAME flatbuffers
+              REPO https://github.com/google/flatbuffers.git
+              TAG e6463926479bd6b330cbcf673f7e917803fd5831
     )
-    # For native flatc build purposes the flatc needs to be included in 'all' target
+#[[
+    report_build(flatbuffers)
+    FetchContent_Declare(flatbuffers
+                         GIT_REPOSITORY https://github.com/google/flatbuffers
+                         # Sync with tensorflow/third_party/flatbuffers/workspace.bzl
+                         GIT_TAG e6463926479bd6b330cbcf673f7e917803fd5831
+                         GIT_PROGRESS TRUE
+                         OVERRIDE_FIND_PACKAGE
+    )
+]]
+    set(FLATBUFFERS_BUILD_TESTS OFF)
+    #FetchContent_MakeAvailable(flatbuffers)
+    configure_target(flatbuffers)
+    unset(FLATBUFFERS_BUILD_TESTS)
+# For native flatc build purposes the flatc needs to be included in 'all' target
     if(NOT DEFINED FLATC_EXCLUDE_FROM_ALL)
         set(FLATC_EXCLUDE_FROM_ALL TRUE)
     endif()
 
+
     add_custom_target(flatbuffers-flatc
-                      COMMAND ${CMAKE_COMMAND} -B ${CMAKE_BINARY_DIR}/flatbuffers-flatc -S ${CMAKE_BINARY_DIR}/${EPA}/src/${EPA} -DCMAKE_CXX_FLAGS="-fPIC" -DFLATBUFFERS_BUILD_TESTS=OFF -DFLATBUFFERS_BUILD_FLATLIB=OFF -DFLATBUFFERS_STATIC_FLATC=ON -DFLATBUFFERS_BUILD_FLATHASH=OFF -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
-                      COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}/flatbuffers-flatc
-                      COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR}/flatbuffers-flatc
+                      COMMAND ${CMAKE_COMMAND} -B ${CMAKE_CURRENT_BINARY_DIR}/flatbuffers-flatc -S ${CMAKE_CURRENT_BINARY_DIR}/_deps/flatbuffers-src/src/flatbuffers -DCMAKE_CXX_FLAGS="-fPIC" -DFLATBUFFERS_BUILD_TESTS=OFF -DFLATBUFFERS_BUILD_FLATLIB=OFF -DFLATBUFFERS_STATIC_FLATC=ON -DFLATBUFFERS_BUILD_FLATHASH=OFF -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+                      COMMAND ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_BINARY_DIR}/flatbuffers-flatc
+                      COMMAND ${CMAKE_COMMAND} --install ${CMAKE_CURRENT_BINARY_DIR}/flatbuffers-flatc
     )
     add_dependencies(flatbuffers-flatc flatbuffers)
-    list(APPEND TFL_DEPENDS flatbuffers-flatc)
+    add_library(flatbuffers::flatbuffers ALIAS flatbuffers)
+    add_executable(flatbuffers::flatc IMPORTED)
+    set_property(TARGET flatbuffers::flatc APPEND PROPERTY IMPORTED_CONFIGURATIONS NOCONFIG)
+    set_target_properties(flatbuffers::flatc PROPERTIES
+                          IMPORTED_LOCATION_NOCONFIG "${CMAKE_CURRENT_BINARY_DIR}/_deps/flatbuffers-build/flatc"
+    )
+    message("FLATB ${CMAKE_CURRENT_BINARY_DIR}/flatc")
 endif()

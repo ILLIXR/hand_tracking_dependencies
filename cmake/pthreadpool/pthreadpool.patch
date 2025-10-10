@@ -1,6 +1,19 @@
 --- CMakeLists.txt.orig	2023-08-29 01:35:24.000000000 -0500
 +++ CMakeLists.txt	2024-08-13 15:49:33.836730387 -0500
-@@ -91,7 +91,10 @@
+@@ -1,5 +1,12 @@
+ CMAKE_MINIMUM_REQUIRED(VERSION 3.5 FATAL_ERROR)
+
++if (POLICY CMP0126)
++    cmake_policy(SET CMP0126 NEW)
++endif()
++if (POLICY CMP0077)
++    cmake_policy(SET CMP0077 NEW)
++endif()
++
+ # ---[ Project
+ PROJECT(pthreadpool C)
+
+@@ -91,7 +98,10 @@
  ENDIF()
 
  ADD_LIBRARY(pthreadpool_interface INTERFACE)
@@ -12,7 +25,7 @@
  IF(NOT PTHREADPOOL_ALLOW_DEPRECATED_API)
    TARGET_COMPILE_DEFINITIONS(pthreadpool_interface INTERFACE PTHREADPOOL_NO_DEPRECATED_API=1)
  ENDIF()
-@@ -163,10 +166,35 @@
+@@ -163,10 +173,35 @@
  ENDIF()
  TARGET_LINK_LIBRARIES(pthreadpool PRIVATE fxdiv)
 
@@ -31,18 +44,18 @@
 +
 +include(CMakePackageConfigHelpers)
 +write_basic_package_version_file(
-+        ${CMAKE_BINARY_DIR}/pthreadpoolConfigVersion.cmake
++        ${CMAKE_CURRENT_BINARY_DIR}/pthreadpoolConfigVersion.cmake
 +        VERSION 1.0.0
 +        COMPATIBILITY AnyNewerVersion
 +)
 +
 +configure_package_config_file(
-+        ${CMAKE_SOURCE_DIR}/pthreadpoolConfig.cmake.in
-+        ${CMAKE_BINARY_DIR}/pthreadpoolConfig.cmake
++        ${CMAKE_CURRENT_SOURCE_DIR}/pthreadpoolConfig.cmake.in
++        ${CMAKE_CURRENT_BINARY_DIR}/pthreadpoolConfig.cmake
 +        INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/pthreadpool"
 +)
 +install(
-+        FILES "${CMAKE_BINARY_DIR}/pthreadpoolConfigVersion.cmake" "${CMAKE_BINARY_DIR}/pthreadpoolConfig.cmake"
++        FILES "${CMAKE_CURRENT_BINARY_DIR}/pthreadpoolConfigVersion.cmake" "${CMAKE_CURRENT_BINARY_DIR}/pthreadpoolConfig.cmake"
 +        DESTINATION lib/cmake/pthreadpool
 +)
 +
@@ -56,7 +69,7 @@
  	GIT_TAG master
  	SOURCE_DIR "${CMAKE_BINARY_DIR}/FXdiv-source"
  	BINARY_DIR "${CMAKE_BINARY_DIR}/FXdiv"
-+    PATCH_COMMAND patch -p0 -N --input=${CMAKE_SOURCE_DIR}/fxdiv.patch
++    PATCH_COMMAND patch -p0 -N --input=${CMAKE_CURRENT_SOURCE_DIR}/fxdiv.patch
  	CONFIGURE_COMMAND ""
  	BUILD_COMMAND ""
  	INSTALL_COMMAND ""

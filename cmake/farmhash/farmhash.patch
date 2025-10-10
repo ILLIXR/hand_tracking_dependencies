@@ -17,7 +17,7 @@
 
 --- /dev/null	2024-08-14 10:03:15.448000425 -0500
 +++ CMakeLists.txt	2024-08-14 12:58:31.292321343 -0500
-@@ -0,0 +1,74 @@
+@@ -0,0 +1,78 @@
 +#
 +# Copyright 2020 The TensorFlow Authors. All Rights Reserved.
 +#
@@ -33,6 +33,10 @@
 +# See the License for the specific language governing permissions and
 +# limitations under the License.
 +cmake_minimum_required(VERSION 3.16)
++if (POLICY CMP0126)
++    cmake_policy(SET CMP0126 NEW)
++endif()
++
 +project(farmhash CXX)
 +
 +# Transcribed from farmhash/src/Makefile.am
@@ -43,16 +47,16 @@
 +)
 +
 +add_library(farmhash
-+            ${CMAKE_SOURCE_DIR}/src/farmhash.cc
-+            ${CMAKE_SOURCE_DIR}/src/farmhash.h
++            ${CMAKE_CURRENT_SOURCE_DIR}/src/farmhash.cc
++            ${CMAKE_CURRENT_SOURCE_DIR}/src/farmhash.h
 +)
 +set_target_properties(
 +        farmhash
-+        PROPERTIES PUBLIC_HEADER ${CMAKE_SOURCE_DIR}/src/farmhash.h
++        PROPERTIES PUBLIC_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/src/farmhash.h
 +)
 +target_include_directories(
 +        farmhash PUBLIC
-+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
++        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
 +        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 +)
 +if(NOT FARMHASH_HAS_BUILTIN_EXPECT)
@@ -77,18 +81,18 @@
 +
 +include(CMakePackageConfigHelpers)
 +write_basic_package_version_file(
-+        ${CMAKE_BINARY_DIR}/farmhashConfigVersion.cmake
++        ${CMAKE_CURRENT_BINARY_DIR}/farmhashConfigVersion.cmake
 +        VERSION 1.1.0
 +        COMPATIBILITY SameMajorVersion
 +)
 +configure_package_config_file(
-+        ${CMAKE_SOURCE_DIR}/farmhashConfig.cmake.in
-+        ${CMAKE_BINARY_DIR}/farmhashConfig.cmake
++        ${CMAKE_CURRENT_SOURCE_DIR}/farmhashConfig.cmake.in
++        ${CMAKE_CURRENT_BINARY_DIR}/farmhashConfig.cmake
 +        INSTALL_DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/farmhash"
 +)
 +install(
-+        FILES ${CMAKE_BINARY_DIR}/farmhashConfig.cmake
-+              ${CMAKE_BINARY_DIR}/farmhashConfigVersion.cmake
++        FILES ${CMAKE_CURRENT_BINARY_DIR}/farmhashConfig.cmake
++              ${CMAKE_CURRENT_BINARY_DIR}/farmhashConfigVersion.cmake
 +        DESTINATION lib/cmake/farmhash
 +)
 +

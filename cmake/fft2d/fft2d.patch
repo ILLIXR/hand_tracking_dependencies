@@ -1,6 +1,6 @@
 --- /dev/null	2024-08-14 10:03:15.448000425 -0500
 +++ CMakeLists.txt	2024-08-13 12:45:22.220393118 -0500
-@@ -0,0 +1,82 @@
+@@ -0,0 +1,86 @@
 +#
 +# Copyright 2020 The TensorFlow Authors. All Rights Reserved.
 +#
@@ -17,6 +17,10 @@
 +# limitations under the License.
 +cmake_minimum_required(VERSION 3.16)
 +# modified by ILLIXR
++if (POLICY CMP0126)
++    cmake_policy(SET CMP0126 NEW)
++endif()
++
 +project(fft2d C)
 +
 +set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -74,13 +78,13 @@
 +        COMPATIBILITY AnyNewerVersion
 +)
 +configure_package_config_file(
-+        "${CMAKE_SOURCE_DIR}/fft2dConfig.cmake.in"
-+        "${CMAKE_BINARY_DIR}/fft2dConfig.cmake"
++        "${CMAKE_CURRENT_SOURCE_DIR}/fft2dConfig.cmake.in"
++        "${CMAKE_CURRENT_BINARY_DIR}/fft2dConfig.cmake"
 +        INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/fft2d"
 +)
 +
 +install(
-+        FILES "${CMAKE_BINARY_DIR}/fft2dConfig.cmake" "${CMAKE_BINARY_DIR}/fft2dConfigVersion.cmake"
++        FILES "${CMAKE_CURRENT_BINARY_DIR}/fft2dConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/fft2dConfigVersion.cmake"
 +        DESTINATION lib/cmake/fft2d
 +)
 
