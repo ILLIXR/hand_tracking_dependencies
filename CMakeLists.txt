@@ -31,7 +31,7 @@ set(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH}
     ${CMAKE_INSTALL_PREFIX}/lib/cmake
 )
-include(reports)
+include(cmake/reports.cmake)
 include(ExternalProject)
 
 include(cmake/absl.cmake)
