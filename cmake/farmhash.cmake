@@ -21,23 +21,27 @@ find_package(farmhash QUIET CONFIG)
 if(farmhash_FOUND)
     report_found(farmhash "${farmhash_VERSION}")
 else()
-    fetch_git(NAME farmhash
-              REPO https://github.com/google/farmhash.git
-              TAG 0d859a811870d10f53a594927d0d0b97573ad06d
-              PATCH TRUE
-    )
-    #[[
-    report_build(farmhash)
-    FetchContent_Declare(farmhash
-                         GIT_REPOSITORY https://github.com/google/farmhash
-                         # Sync with tensorflow/third_party/farmhash/workspace.bzl
-                         GIT_TAG 0d859a811870d10f53a594927d0d0b97573ad06d
-                         GIT_PROGRESS TRUE
-                         PATCH_COMMAND ${CMAKE_CURRENT_LIST_DIR}/../do_patch.sh -p ${CMAKE_CURRENT_LIST_DIR}/farmhash/farmhash.patch
-                         OVERRIDE_FIND_PACKAGE
-    )
+    if(WIN32 OR MSVC)
+        message(FATAL_ERROR "Please install farmhash with vcpkg")
+    else()
+        report_build(farmhash)
+        set(EPA farmhash)
+        ExternalProject_Add(
+                ${EPA}
+                GIT_REPOSITORY https://github.com/google/farmhash
+                # Sync with tensorflow/third_party/farmhash/workspace.bzl
+                GIT_TAG 0d859a811870d10f53a594927d0d0b97573ad06d
+                # It's not currently possible to shallow clone with a GIT TAG
+                # as cmake attempts to git checkout the commit hash after the clone
+                # which doesn't work as it's a shallow clone hence a different commit hash.
+                # https://gitlab.kitware.com/cmake/cmake/-/issues/17770
+                # GIT_SHALLOW TRUE
+                GIT_PROGRESS TRUE
+                PREFIX "${CMAKE_BINARY_DIR}/${EPA}"
+                PATCH_COMMAND ${CMAKE_SOURCE_DIR}/do_patch.sh -p ${CMAKE_SOURCE_DIR}/cmake/farmhash/farmhash.patch
+                CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_CXX_FLAGS="-fPIC"
+        )
+        list(APPEND TFL_DEPENDS ${EPA})
 
-    FetchContent_MakeAvailable(farmhash)]]
-    configure_target(farmhash)
-    add_library(farmhash::farmhash ALIAS farmhash)
+    endif()
 endif()

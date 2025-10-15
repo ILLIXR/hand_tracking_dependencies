@@ -19,7 +19,7 @@ if(tfl-XNNPACK${LIBRARY_POSTFIX}_FOUND)
 else()
     fetch_git(NAME tfl-XNNPACK${LIBRARY_POSTFIX}
               REPO https://github.com/ILLIXR/XNNPACK.git
-              TAG a365bea429cfc3ca90bcd5857839a968a9196a46
+              TAG 1d9c60da32f1d2b5af17470bdab75017cfad9511
     )
     #[[
     report_build(tfl_XNNPACK)
@@ -50,6 +50,8 @@ else()
     set(XNNPACK_ENABLE_ARM_BF16 OFF)
     set(XNNPACK_ENABLE_ARM_DOTPROD OFF)
     set(XNNPACK_ENABLE_ARM_I8MM OFF)
+
+
     configure_target(tfl-XNNPACK${LIBRARY_POSTFIX})
     #FetchContent_MakeAvailable(tfl-XNNPACK${LIBRARY_POSTFIX})
     unset(XNNPACK_BUILD_LIBRARY)

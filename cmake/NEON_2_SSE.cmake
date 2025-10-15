@@ -20,22 +20,19 @@ find_package(NEON_2_SSE QUIET CONFIG)
 if(NEON_2_SSE_FOUND)
     report_found(neon2_sse "${NEON_2_SSE_VERSION}")
 else()
-    fetch_url(NAME neon_2_sse
-              SRC_URL https://storage.googleapis.com/mirror.tensorflow.org/github.com/intel/ARM_NEON_2_x86_SSE/archive/a15b489e1222b2087007546b4912e21293ea86ff.tar.gz
-              HASH SHA256=019fbc7ec25860070a1d90e12686fc160cfb33e22aa063c80f52b363f1361e9d
-    )
-    #[[
-    report_build(neon_2_sse)
-    FetchContent_Declare(neon_2_sse
-                         URL https://storage.googleapis.com/mirror.tensorflow.org/github.com/intel/ARM_NEON_2_x86_SSE/archive/a15b489e1222b2087007546b4912e21293ea86ff.tar.gz
-                         # Sync with tensorflow/workspace2.bzl
-                         URL_HASH SHA256=019fbc7ec25860070a1d90e12686fc160cfb33e22aa063c80f52b363f1361e9d
-                         OVERRIDE_FIND_PACKAGE
-    )
-    FetchContent_MakeAvailable(neon_2_sse)]]
-    configure_target(neon_2_sse)
-    add_library(NEON_2_SSE::NEON_2_SSE INTERFACE IMPORTED)
-    set_target_properties(NEON_2_SSE::NEON_2_SSE PROPERTIES
-                          INTERFACE_INCLUDE_DIRECTORIES ${neon_2_sse_SOURCE_DIR}
-    )
+    if(WIN32 OR MSVC)
+
+    else()
+        report_build(neon_2_sse)
+        set(EPA neon2sse)
+        ExternalProject_Add(
+                neon2sse
+                URL https://storage.googleapis.com/mirror.tensorflow.org/github.com/intel/ARM_NEON_2_x86_SSE/archive/a15b489e1222b2087007546b4912e21293ea86ff.tar.gz
+                # Sync with tensorflow/workspace2.bzl
+                URL_HASH SHA256=019fbc7ec25860070a1d90e12686fc160cfb33e22aa063c80f52b363f1361e9d
+                PREFIX "${CMAKE_BINARY_DIR}/neon2sse"
+                CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_CXX_FLAGS="-fPIC"
+        )
+        list(APPEND TFL_DEPENDS neon2sse)
+    endif()
 endif()
