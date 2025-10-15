@@ -1,4 +1,6 @@
-find_package(protobuf 3.19 QUIET CONFIG)
+find_package(protobuf 3.19...3.21 QUIET CONFIG)
+if(NOT protobuf_FOUND)
+    pkg_check_modules(protobuf QUIET protobuf>=3.19 protobuf<=3.21)
 if(protobuf_FOUND)
     report_found(protobuf "${protobuf_VERSION}")
 else()
