@@ -33,7 +33,7 @@ set(CMAKE_MODULE_PATH
 )
 include(cmake/reports.cmake)
 include(ExternalProject)
-
+find_package(PkgConfig REQUIRED)
 include(cmake/absl.cmake)
 
 find_package(Eigen3 REQUIRED CONFIG)
