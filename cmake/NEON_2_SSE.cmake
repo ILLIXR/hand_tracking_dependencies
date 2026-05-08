@@ -20,15 +20,42 @@ find_package(NEON_2_SSE QUIET CONFIG)
 if(NEON_2_SSE_FOUND)
     report_found(neon2_sse "${NEON_2_SSE_VERSION}")
 else()
-    report_build(neon_2_sse)
-    set(EPA neon2sse)
-    ExternalProject_Add(
-            ${EPA}
-            URL https://storage.googleapis.com/mirror.tensorflow.org/github.com/intel/ARM_NEON_2_x86_SSE/archive/a15b489e1222b2087007546b4912e21293ea86ff.tar.gz
-            # Sync with tensorflow/workspace2.bzl
-            URL_HASH SHA256=019fbc7ec25860070a1d90e12686fc160cfb33e22aa063c80f52b363f1361e9d
-            PREFIX "${CMAKE_BINARY_DIR}/${EPA}"
-            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_CXX_FLAGS="-fPIC" -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+    fetch_URL(NAME neon_2_sse
+              SRC_URL https://storage.googleapis.com/mirror.tensorflow.org/github.com/intel/ARM_NEON_2_x86_SSE/archive/a15b489e1222b2087007546b4912e21293ea86ff.tar.gz
+              HASH SHA256=019fbc7ec25860070a1d90e12686fc160cfb33e22aa063c80f52b363f1361e9d
+              NO_OVERRIDE
     )
-    list(APPEND TFL_DEPENDS ${EPA})
+
+    configure_target(NAME neon_2_sse
+                     NO_FIND
+    )
+
+    # NEON_2_SSE generates its Config.cmake at configure time but
+    # NEON_2_SSETargets.cmake only at install time via install(EXPORT).
+    # Overwrite the config with our own. Since this is a header-only
+    # INTERFACE library, the target only needs the include directory.
+    set(_n2s_src "${neon_2_sse_SOURCE_DIR}")
+    file(WRITE "${neon_2_sse_BINARY_DIR}/generated/NEON_2_SSEConfig.cmake"
+         "include(FetchContent)
+FetchContent_GetProperties(neon_2_sse)
+
+if(neon_2_sse_POPULATED)
+    if(NOT TARGET NEON_2_SSE::NEON_2_SSE)
+        add_library(NEON_2_SSE::NEON_2_SSE INTERFACE IMPORTED GLOBAL)
+        set_target_properties(NEON_2_SSE::NEON_2_SSE PROPERTIES
+            INTERFACE_INCLUDE_DIRECTORIES \"${_n2s_src}\"
+        )
+    endif()
+    set(NEON_2_SSE_FOUND TRUE)
+    return()
+endif()
+
+# Installed-package mode
+if(EXISTS \"\${CMAKE_CURRENT_LIST_DIR}/NEON_2_SSETargets.cmake\")
+    include(\"\${CMAKE_CURRENT_LIST_DIR}/NEON_2_SSETargets.cmake\")
+endif()
+")
+    unset(_n2s_src)
+
+    set(NEON_2_SSE_DIR "${neon_2_sse_BINARY_DIR}/generated" CACHE PATH "" FORCE)
 endif()

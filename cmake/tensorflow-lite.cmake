@@ -6,14 +6,22 @@ find_package(tensorflow-lite${TFLIBRARY_POSTFIX} QUIET CONFIG)
 if(tensorflow-lite${TFLIBRARY_POSTFIX}_FOUND)
     report_found(tensorflow-lite "")
 else()
-    set(EPA tensorflow-lite)
-    report_build("${EPA}")
-    ExternalProject_Add(
-            ${EPA}
-            GIT_REPOSITORY https://github.com/ILLIXR/tensorflow-lite
-            GIT_TAG 02367633eedb5a2598d65bee8e9f554b17ddad66
-            PREFIX "${CMAKE_BINARY_DIR}/${EPA}"
-            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DTFLITE_ENABLE_INSTALL=ON -DBUILD_SHARED_LIBS=OFF -DTFLITE_ENABLE_GPU=${ENABLE_GPU} -DTFLITE_ENABLE_RUY=ON -DTFLITE_ENABLE_NNAPI=ON -DLIBRARY_POSTFIX=${LIBRARY_POSTFIX}  -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} -DCMAKE_POLICY_VERSION_MINIMUM=3.5
-            DEPENDS ${TFL_DEPENDS}
+    fetch_git(NAME tensorflow-lite
+              REPO https://github.com/ILLIXR/tensorflow-lite
+              TAG 892dc20d59a894ed72b55bc2be756e0989bdc657
     )
+    set(TFLITE_ENABLE_INSTALL ON CACHE BOOL "" FORCE)
+    set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+    set(TFLITE_ENABLE_GPU ${ENABLE_GPU} CACHE BOOL "" FORCE)
+    set(TFLITE_ENABLE_RUY ON CACHE BOOL "" FORCE)
+    set(TFLITE_ENABLE_NNAPI ON CACHE BOOL "" FORCE)
+
+    configure_target(NAME tensorflow-lite)
+
+    unset(TFLITE_ENABLE_INSTALL CACHE)
+    set(BUILD_SHARED_LIBS ON CACHE BOOL "" FORCE)
+    unset(TFLITE_ENABLE_GPU CACHE)
+    unset(TFLITE_ENABLE_RUY CACHE)
+    unset(TFLITE_ENABLE_NNAPI CACHE)
+
 endif()

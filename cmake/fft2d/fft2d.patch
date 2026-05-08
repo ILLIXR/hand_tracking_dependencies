@@ -74,7 +74,7 @@
 +        COMPATIBILITY AnyNewerVersion
 +)
 +configure_package_config_file(
-+        "${CMAKE_SOURCE_DIR}/fft2dConfig.cmake.in"
++        "${CMAKE_CURRENT_SOURCE_DIR}/fft2dConfig.cmake.in"
 +        "${CMAKE_BINARY_DIR}/fft2dConfig.cmake"
 +        INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/fft2d"
 +)
@@ -85,21 +85,104 @@
 +)
 
 --- /dev/null	2024-08-14 10:03:15.448000425 -0500
-+++ fft2dConfig.cmake.in	2024-08-13 14:20:06.532566590 -0500
-@@ -0,0 +1,13 @@
++++ fft2dConfig.cmake.in	2026-05-07 14:46:06.532566590 -0500
+@@ -0,0 +1,96 @@
 +
 +@PACKAGE_INIT@
 +
++# The fft2d package provides multiple distinct libraries:
++set(_fft2d_libs fft2d_alloc fft2d_fftsg fft2d_fftsg2d fft2d_fft4f2d fft2d_fftsg3d fft2d_shrtdct)
++
++# ---------------------------------------------------------------
++# FetchContent / add_subdirectory mode
++# Check for any one of the expected fft2d targets to detect that
++# FetchContent_MakeAvailable() has already populated the build tree.
++# ---------------------------------------------------------------
++if(TARGET fft2d_fftsg)
++    set(fft2d_FOUND TRUE)
++    set(fft2d_LIBRARIES "")
++    set(fft2d_INCLUDE_DIRS "")
++
++    foreach(_lib IN LISTS _fft2d_libs)
++        if(TARGET ${_lib})
++            if(NOT TARGET fft2d::${_lib})
++                add_library(fft2d::${_lib} ALIAS ${_lib})
++            endif()
++            list(APPEND fft2d_LIBRARIES fft2d::${_lib})
++
++            # Collect include dirs from each target (deduplicated by CMake)
++            get_target_property(_inc ${_lib} INTERFACE_INCLUDE_DIRECTORIES)
++            if(_inc)
++                list(APPEND fft2d_INCLUDE_DIRS "${_inc}")
++            endif()
++        endif()
++    endforeach()
++
++    if(fft2d_INCLUDE_DIRS)
++        list(REMOVE_DUPLICATES fft2d_INCLUDE_DIRS)
++    endif()
++
++    return()
++endif()
++
++# ---------------------------------------------------------------
++# Installed-package mode (ExternalProject / system install)
++# ---------------------------------------------------------------
 +include(FindPackageHandleStandardArgs)
-+find_path(fft_ROOT_DIR NAMES include/fft2d.h)
++
++find_path(fft_ROOT_DIR
++    NAMES include/fft2d.h
++    PATHS ${fft2d_ROOT_DIR} @CMAKE_INSTALL_PREFIX@
++    NO_DEFAULT_PATH
++)
 +set(fft2d_ROOT_DIR ${fft_ROOT_DIR})
-+find_library(fft_lib NAMES fft2d_alloc fft2d_fftsg2d fft2d_fftsg fft2d_fft4f2d fft2d_fftsg3d fft2d_shrtdct PATHS ${fft2d_ROOT_DIR}/lib ${fft2d_LIB_PATH} @CMAKE_INSTALL_PREFIX@/lib)
-+set(fft2d_LIBRARIES ${fft_lib})
-+find_path(include_dirs NAMES fft2d.h PATHS ${fft2d_ROOT_DIR}/include @CMAKE_INSTALL_PREFIX@/include)
++
++find_path(include_dirs
++    NAMES fft2d.h
++    PATHS ${fft2d_ROOT_DIR}/include @CMAKE_INSTALL_PREFIX@/include
++    NO_DEFAULT_PATH
++)
 +set(fft2d_INCLUDE_DIRS ${include_dirs})
++
++# Search for each library individually — find_library stops at first match
++# so a single call with multiple NAMES cannot find all of them.
++set(fft2d_LIBRARIES "")
++set(_fft2d_all_found TRUE)
++foreach(_lib IN LISTS _fft2d_libs)
++    find_library(_fft2d_${_lib}
++        NAMES ${_lib}
++        PATHS ${fft2d_ROOT_DIR}/lib ${fft2d_LIB_PATH} @CMAKE_INSTALL_PREFIX@/lib
++        NO_DEFAULT_PATH
++    )
++    if(_fft2d_${_lib})
++        list(APPEND fft2d_LIBRARIES "${_fft2d_${_lib}}")
++    else()
++        # Not all sub-libraries may be present; warn but don't hard-fail
++        message(WARNING "fft2d: could not find library '${_lib}'")
++        set(_fft2d_all_found FALSE)
++    endif()
++endforeach()
++
 +find_package_handle_standard_args(fft2d DEFAULT_MSG fft2d_LIBRARIES fft2d_INCLUDE_DIRS)
 +
-+include(${CMAKE_CURRENT_LIST_DIR}/fft2dTargets.cmake)
++if(fft2d_FOUND)
++    set(_targets_file "${CMAKE_CURRENT_LIST_DIR}/fft2dTargets.cmake")
++    if(EXISTS "${_targets_file}")
++        include("${_targets_file}")
++    else()
++        # No Targets file — define minimal IMPORTED targets from found paths
++        foreach(_lib IN LISTS _fft2d_libs)
++            if(_fft2d_${_lib} AND NOT TARGET fft2d::${_lib})
++                add_library(fft2d::${_lib} STATIC IMPORTED)
++                set_target_properties(fft2d::${_lib} PROPERTIES
++                    IMPORTED_LOCATION             "${_fft2d_${_lib}}"
++                    INTERFACE_INCLUDE_DIRECTORIES "${include_dirs}"
++                )
++            endif()
++        endforeach()
++    endif()
++endif()
++
 
 --- /dev/null	2024-08-14 10:03:15.448000425 -0500
 +++ fft.h	2024-05-23 10:51:16.304321886 -0500

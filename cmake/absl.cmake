@@ -17,19 +17,23 @@
 # system installation and build from source instead.
 find_package(absl QUIET CONFIG)
 if(absl_FOUND)
-    report_found(abseil-cpp "${absl_VERSION}")
+    report_found(absl "${absl_VERSION}")
 else()
-    report_build(abseil-cpp)
-    set(EPA abseil-cpp)
-    ExternalProject_Add(
-            ${EPA}
-            GIT_REPOSITORY https://github.com/abseil/abseil-cpp
-            # Sync with tensorflow/third_party/absl/workspace.bzl
-            GIT_TAG 9687a8ea750bfcddf790372093245a1d041b21a3
-            GIT_SHALLOW FALSE
-            GIT_PROGRESS TRUE
-            PREFIX "${CMAKE_BINARY_DIR}/${EPA}"
-            CMAKE_ARGS -DABSL_ENABLE_INSTALL=ON -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DABSL_USE_GOOGLETEST_HEAD=OFF -DABSL_PROPAGATE_CXX_STD=ON -DCMAKE_CXX_FLAGS="-fPIC"  -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+    fetch_GIT(NAME absl
+              REPO https://github.com/abseil/abseil-cpp
+              # Sync with tensorflow/third_party/absl/workspace.bzl
+              TAG 9687a8ea750bfcddf790372093245a1d041b21a3
+              NO_SHALLOW
     )
-    list(APPEND TFL_DEPENDS ${EPA})
+    set(ABSL_ENABLE_INSTALL ON CACHE BOOL "" FORCE)
+    set(ABSL_USE_GOOGLETEST_HEAD OFF CACHE BOOL "" FORCE)
+    set(ABSL_PROPAGATE_CXX_STD ON CACHE BOOL "" FORCE)
+    set(ABSL_BUILD_TESTING OFF CACHE BOOL "" FORCE)
+
+    configure_target(NAME absl)
+
+    unset(ABSL_ENABLE_INSTALL CACHE)
+    unset(ABSL_USE_GOOGLETEST_HEAD CACHE)
+    unset(ABSL_PROPAGATE_CXX_STD CACHE)
+    unset(ABSL_BUILD_TESTING CACHE)
 endif()

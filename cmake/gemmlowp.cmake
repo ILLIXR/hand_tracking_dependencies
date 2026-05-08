@@ -19,23 +19,12 @@ find_package(gemmlowp QUIET CONFIG)
 if (gemmlowp_FOUND)
     report_found(gemmlowp "")
 else()
-    report_build(gemmlowp)
-    set(EPA gemmlowp)
-    ExternalProject_Add(
-            gemmlowp
-            GIT_REPOSITORY https://github.com/google/gemmlowp
-            # Sync with tensorflow/third_party/gemmlowp/workspace.bzl
-            GIT_TAG 16e8662c34917be0065110bfcd9cc27d30f52fdf
-            # It's not currently (cmake 3.17) possible to shallow clone with a GIT TAG
-            # as cmake attempts to git checkout the commit hash after the clone
-            # which doesn't work as it's a shallow clone hence a different commit hash.
-            # https://gitlab.kitware.com/cmake/cmake/-/issues/17770
-            # GIT_SHALLOW TRUE
-            GIT_PROGRESS TRUE
-            PREFIX "${CMAKE_BINARY_DIR}/${EPA}"
-            SOURCE_SUBDIR contrib
-            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DBUILD_TESTING=OFF -DCMAKE_CXX_FLAGS="-fPIC"  -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+    fetch_git(NAME gemmlowp
+              REPO https://github.com/google/gemmlowp
+              TAG 16e8662c34917be0065110bfcd9cc27d30f52fdf
+              SUBDIR contrib
     )
-    list(APPEND TFL_DEPENDS ${EPA})
+
+    configure_target(NAME gemmlowp)
 
 endif()

@@ -21,22 +21,15 @@ find_package(farmhash QUIET CONFIG)
 if(farmhash_FOUND)
     report_found(farmhash "${farmhash_VERSION}")
 else()
-    report_build(farmhash)
-    set(EPA farmhash)
-    ExternalProject_Add(
-            ${EPA}
-            GIT_REPOSITORY https://github.com/google/farmhash
-            # Sync with tensorflow/third_party/farmhash/workspace.bzl
-            GIT_TAG 0d859a811870d10f53a594927d0d0b97573ad06d
-            # It's not currently possible to shallow clone with a GIT TAG
-            # as cmake attempts to git checkout the commit hash after the clone
-            # which doesn't work as it's a shallow clone hence a different commit hash.
-            # https://gitlab.kitware.com/cmake/cmake/-/issues/17770
-            # GIT_SHALLOW TRUE
-            GIT_PROGRESS TRUE
-            PREFIX "${CMAKE_BINARY_DIR}/${EPA}"
-            PATCH_COMMAND ${CMAKE_SOURCE_DIR}/do_patch.sh -p ${CMAKE_SOURCE_DIR}/cmake/farmhash/farmhash.patch
-            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_CXX_FLAGS="-fPIC"  -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+    fetch_git(NAME farmhash
+              REPO https://github.com/google/farmhash
+              TAG 0d859a811870d10f53a594927d0d0b97573ad06d
+              PATCH
+              NO_OVERRIDE
     )
-    list(APPEND TFL_DEPENDS ${EPA})
+
+    configure_target(NAME farmhash
+                     NO_FIND
+    )
+    set(farmhash_DIR "${CMAKE_BINARY_DIR}" CACHE PATH "" FORCE)
 endif()

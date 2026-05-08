@@ -4,7 +4,7 @@ cmake_policy(SET CMP0114 NEW)
 if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.24)
     cmake_policy(SET CMP0135 NEW)
 endif()
-
+set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 # Double colon in target name means ALIAS or IMPORTED target.
 cmake_policy(SET CMP0028 NEW)
 if(NOT CMAKE_BUILD_TYPE)
@@ -14,7 +14,7 @@ endif()
 
 option(ENABLE_GPU "Whether to compile tensorflow for gpu use" OFF)
 option(LIBRARY_POSTFIX "Used as additional postfix for delineating between similar but not identical library versions" "")
-set(TFL_DEPENDS "")
+
 if(LIBRARY_POSTFIX)
     if(NOT ((LIBRARY_POSTFIX MATCHES "^-") OR (LIBRARY_POSTFIX MATCHES "^_")))
         set(LIBRARY_POSTFIX "-${LIBRARY_POSTFIX}")
@@ -23,16 +23,25 @@ else()
     set(LIBRARY_POSTFIX "")
 endif()
 
+set(CMAKE_CXX_FLAGS "-fPIC ${CMAKE_CXX_FLAGS}")
+
 project(hand_tracking_dependencies C CXX)
 set(CMAKE_CXX_STANFDARD 17)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_MODULE_PATH
-    ${CMAKE_SOURCE_DIR}/cmake
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake
     ${CMAKE_MODULE_PATH}
     ${CMAKE_INSTALL_PREFIX}/lib/cmake
 )
+set(CMAKE_PREFIX_PATH
+    ${CMAKE_BINARY_DIR}
+    ${CMAKE_PREFIX_PATH}
+)
+set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
+
+include(cmake/helpers.cmake)
 include(cmake/reports.cmake)
-include(ExternalProject)
+include(FetchContent)
 find_package(PkgConfig REQUIRED)
 include(cmake/absl.cmake)
 

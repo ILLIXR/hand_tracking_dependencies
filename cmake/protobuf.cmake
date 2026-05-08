@@ -5,16 +5,16 @@ endif()
 if(protobuf_FOUND)
     report_found(protobuf "${protobuf_VERSION}")
 else()
-    set(EPA protobuf)
-    report_build(${EPA})
-    ExternalProject_Add(
-            ${EPA}
-            GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
-            GIT_TAG v3.19.1
-            GIT_PROGRESS TRUE
-            PREFIX "${CMAKE_BINARY_DIR}/${EPA}"
-            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_CXX_FLAGS="-fPIC"  -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} -DCMAKE_POLICY_VERSION_MINIMUM=3.5
-            SOURCE_SUBDIR cmake
-            GIT_SUBMODULES_RECURSE TRUE
+    fetch_git(NAME protobuf
+              REPO https://github.com/protocolbuffers/protobuf.git
+              TAG v3.19.1
+              RECURSE
+              SUBDIR cmake
     )
+
+    set(protobuf_BUILD_TESTS OFF CACHE BOOL "Build tests" FORCE)
+    configure_target(NAME protobuf
+                     USE_PKG_CONF
+    )
+    unset(protobuf_BUILD_TESTS CACHE)
 endif()

@@ -1,19 +1,78 @@
 --- /dev/null	2024-08-14 10:03:15.448000425 -0500
-+++ farmhashConfig.cmake.in	2024-08-14 12:58:45.352321772 -0500
-@@ -0,0 +1,13 @@
++++ farmhashConfig.cmake.in	2026-04-07 15:50:45.352321772 -0500
+@@ -0,0 +1,72 @@
 +
 +@PACKAGE_INIT@
 +
++# ---------------------------------------------------------------
++# FetchContent / add_subdirectory mode
++# If farmhash was brought in via FetchContent_MakeAvailable(),
++# its target already exists in the build tree — skip all filesystem
++# searches and expose a namespaced alias.
++# ---------------------------------------------------------------
++if(TARGET farmhash)
++    if(NOT TARGET farmhash::farmhash)
++        # IMPORTED INTERFACE instead of ALIAS — an ALIAS to a real built target
++        # causes install(EXPORT) to require farmhash to be in an export set.
++        add_library(farmhash::farmhash INTERFACE IMPORTED GLOBAL)
++        set_target_properties(farmhash::farmhash PROPERTIES
++            INTERFACE_LINK_LIBRARIES "$<BUILD_INTERFACE:farmhash>"
++        )
++    endif()
++
++    set(FARMHASH_FOUND TRUE)
++    set(FARMHASH_LIBRARIES farmhash::farmhash)
++
++    get_target_property(_fh_inc farmhash INTERFACE_INCLUDE_DIRECTORIES)
++    set(FARMHASH_INCLUDE_DIRS "${_fh_inc}")
++
++    return()
++endif()
++
++# ---------------------------------------------------------------
++# Installed-package mode (ExternalProject / system install)
++# ---------------------------------------------------------------
 +include(FindPackageHandleStandardArgs)
-+find_path(hash_ROOT_DIR NAMES include/farmhash.h)
-+set(FARMHASH_ROOT_DIR ${hash_ROOT_DIR})
-+find_library(farmhash_lib NAMES farmhash PATHS ${FARMHASH_ROOT_DIR}/lib ${FARMHASH_LIB_PATH} @CMAKE_INSTALL_PREFIX@/lib)
-+set(FARMHASH_LIBRARIES ${farmhash_lib})
-+find_path(include_dirs NAMES farmhash.h PATHS ${FARMHASH_ROOT_DIR}/include @CMAKE_INSTALL_PREFIX@/include)
-+set(FARMHASH_INCLUDE_DIRS ${include_dirs})
++
++find_path(fh_ROOT_DIR
++    NAMES include/farmhash.h
++    PATHS ${FARMHASH_ROOT_DIR} @CMAKE_INSTALL_PREFIX@
++    NO_DEFAULT_PATH
++)
++set(FARMHASH_ROOT_DIR ${fh_ROOT_DIR})
++
++find_library(fh_lib
++    NAMES farmhash
++    PATHS ${FARMHASH_ROOT_DIR}/lib ${farmhash_LIB_PATH} @CMAKE_INSTALL_PREFIX@/lib
++    NO_DEFAULT_PATH
++)
++set(FARMHASH_LIBRARIES ${fh_lib})
++
++find_path(fh_dirs
++    NAMES farmhash.h
++    PATHS ${FARMHASH_ROOT_DIR}/include @CMAKE_INSTALL_PREFIX@/include
++    NO_DEFAULT_PATH
++)
++set(FARMHASH_INCLUDE_DIRS ${fh_dirs})
++
 +find_package_handle_standard_args(farmhash DEFAULT_MSG FARMHASH_LIBRARIES FARMHASH_INCLUDE_DIRS)
 +
-+include(${CMAKE_CURRENT_LIST_DIR}/farmhashTargets.cmake)
++if(FARMHASH_FOUND)
++    set(_targets_file "${CMAKE_CURRENT_LIST_DIR}/farmhashTargets.cmake")
++    if(EXISTS "${_targets_file}")
++        include("${_targets_file}")
++    else()
++        if(NOT TARGET farmhash::farmhash)
++            add_library(farmhash::farmhash STATIC IMPORTED)
++            set_target_properties(farmhash::farmhash PROPERTIES
++                IMPORTED_LOCATION             "${fh_lib}"
++                INTERFACE_INCLUDE_DIRECTORIES "${fh_dirs}"
++            )
++        endif()
++    endif()
++    set(FARMHASH_LIBRARIES farmhash::farmhash)
++endif()
++
 
 --- /dev/null	2024-08-14 10:03:15.448000425 -0500
 +++ CMakeLists.txt	2024-08-14 12:58:31.292321343 -0500
@@ -43,16 +102,16 @@
 +)
 +
 +add_library(farmhash
-+            ${CMAKE_SOURCE_DIR}/src/farmhash.cc
-+            ${CMAKE_SOURCE_DIR}/src/farmhash.h
++            ${CMAKE_CURRENT_SOURCE_DIR}/src/farmhash.cc
++            ${CMAKE_CURRENT_SOURCE_DIR}/src/farmhash.h
 +)
 +set_target_properties(
 +        farmhash
-+        PROPERTIES PUBLIC_HEADER ${CMAKE_SOURCE_DIR}/src/farmhash.h
++        PROPERTIES PUBLIC_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/src/farmhash.h
 +)
 +target_include_directories(
 +        farmhash PUBLIC
-+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
++        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
 +        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 +)
 +if(NOT FARMHASH_HAS_BUILTIN_EXPECT)
@@ -82,7 +141,7 @@
 +        COMPATIBILITY SameMajorVersion
 +)
 +configure_package_config_file(
-+        ${CMAKE_SOURCE_DIR}/farmhashConfig.cmake.in
++        ${CMAKE_CURRENT_SOURCE_DIR}/farmhashConfig.cmake.in
 +        ${CMAKE_BINARY_DIR}/farmhashConfig.cmake
 +        INSTALL_DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/farmhash"
 +)

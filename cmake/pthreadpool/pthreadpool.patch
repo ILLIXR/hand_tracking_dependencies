@@ -37,7 +37,7 @@
 +)
 +
 +configure_package_config_file(
-+        ${CMAKE_SOURCE_DIR}/pthreadpoolConfig.cmake.in
++        ${CMAKE_CURRENT_SOURCE_DIR}/pthreadpoolConfig.cmake.in
 +        ${CMAKE_BINARY_DIR}/pthreadpoolConfig.cmake
 +        INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/pthreadpool"
 +)
@@ -56,27 +56,81 @@
  	GIT_TAG master
  	SOURCE_DIR "${CMAKE_BINARY_DIR}/FXdiv-source"
  	BINARY_DIR "${CMAKE_BINARY_DIR}/FXdiv"
-+    PATCH_COMMAND patch -p0 -N --input=${CMAKE_SOURCE_DIR}/fxdiv.patch
++    PATCH_COMMAND patch -p0 -N --input=${CMAKE_CURRENT_SOURCE_DIR}/fxdiv.patch
  	CONFIGURE_COMMAND ""
  	BUILD_COMMAND ""
  	INSTALL_COMMAND ""
 
 --- /dev/null	2024-08-13 09:11:55.024002274 -0500
-+++ pthreadpoolConfig.cmake.in	2024-08-13 14:35:17.792594399 -0500
-@@ -0,0 +1,13 @@
++++ pthreadpoolConfig.cmake.in	2026-05-07 14:45:17.792594399 -0500
+@@ -0,0 +1,67 @@
 +
 +@PACKAGE_INIT@
 +
++# ---------------------------------------------------------------
++# FetchContent / add_subdirectory mode
++# If pthreadpool was brought in via FetchContent_MakeAvailable(),
++# its target already exists in the build tree — skip all filesystem
++# searches and expose a namespaced alias.
++# ---------------------------------------------------------------
++if(TARGET pthreadpool)
++    if(NOT TARGET pthreadpool::pthreadpool)
++        add_library(pthreadpool::pthreadpool ALIAS pthreadpool)
++    endif()
++
++    set(PTHREADPOOL_FOUND TRUE)
++    set(PTHREADPOOL_LIBRARIES pthreadpool::pthreadpool)
++
++    get_target_property(_ptp_inc pthreadpool INTERFACE_INCLUDE_DIRECTORIES)
++    set(PTHREADPOOL_INCLUDE_DIRS "${_ptp_inc}")
++
++    return()
++endif()
++
++# ---------------------------------------------------------------
++# Installed-package mode (ExternalProject / system install)
++# ---------------------------------------------------------------
 +include(FindPackageHandleStandardArgs)
-+find_path(ptp_ROOT_DIR NAMES include/pthreadpool.h)
++
++find_path(ptp_ROOT_DIR
++    NAMES include/pthreadpool.h
++    PATHS ${PTHREADPOOL_ROOT_DIR} @CMAKE_INSTALL_PREFIX@
++    NO_DEFAULT_PATH
++)
 +set(PTHREADPOOL_ROOT_DIR ${ptp_ROOT_DIR})
-+find_library(ptp_lib NAMES pthreadpool PATHS ${PTHREADPOOL_ROOT_DIR}/lib ${pthreadpool_LIB_PATH} @CMAKE_INSTALL_PREFIX@/lib)
++
++find_library(ptp_lib
++    NAMES pthreadpool
++    PATHS ${PTHREADPOOL_ROOT_DIR}/lib ${pthreadpool_LIB_PATH} @CMAKE_INSTALL_PREFIX@/lib
++    NO_DEFAULT_PATH
++)
 +set(PTHREADPOOL_LIBRARIES ${ptp_lib})
-+find_path(ptp_dirs NAMES pthreadpool.h PATHS ${PTHREADPOOL_ROOT_DIR}/include @CMAKE_INSTALL_PREFIX@/include)
++
++find_path(ptp_dirs
++    NAMES pthreadpool.h
++    PATHS ${PTHREADPOOL_ROOT_DIR}/include @CMAKE_INSTALL_PREFIX@/include
++    NO_DEFAULT_PATH
++)
 +set(PTHREADPOOL_INCLUDE_DIRS ${ptp_dirs})
++
 +find_package_handle_standard_args(pthreadpool DEFAULT_MSG PTHREADPOOL_LIBRARIES PTHREADPOOL_INCLUDE_DIRS)
 +
-+include("${CMAKE_CURRENT_LIST_DIR}/pthreadpoolTargets.cmake")
++if(PTHREADPOOL_FOUND)
++    set(_targets_file "${CMAKE_CURRENT_LIST_DIR}/pthreadpoolTargets.cmake")
++    if(EXISTS "${_targets_file}")
++        include("${_targets_file}")
++    else()
++        if(NOT TARGET pthreadpool::pthreadpool)
++            add_library(pthreadpool::pthreadpool STATIC IMPORTED)
++            set_target_properties(pthreadpool::pthreadpool PROPERTIES
++                IMPORTED_LOCATION             "${ptp_lib}"
++                INTERFACE_INCLUDE_DIRECTORIES "${ptp_dirs}"
++            )
++        endif()
++    endif()
++    set(PTHREADPOOL_LIBRARIES pthreadpool::pthreadpool)
++endif()
++
 
 --- /dev/null	2024-08-13 09:11:55.024002274 -0500
 +++ fxdiv.patch	2024-08-13 15:41:48.600716189 -0500

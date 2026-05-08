@@ -19,16 +19,14 @@ find_package(fft2d QUIET CONFIG)
 if(fft2d_FOUND)
     report_found(fft2d "${fft2d_VERSION}")
 else()
-    report_build(fft2d)
-    set(EPA fft2d)
-    ExternalProject_Add(
-            fft2d
-            URL https://storage.googleapis.com/mirror.tensorflow.org/github.com/petewarden/OouraFFT/archive/v1.0.tar.gz
-            # Sync with tensorflow/workspace2.bzl
-            URL_HASH SHA256=5f4dabc2ae21e1f537425d58a49cdca1c49ea11db0d6271e2a4b27e9697548eb
-            PREFIX "${CMAKE_BINARY_DIR}/${EPA}"
-            PATCH_COMMAND ${CMAKE_SOURCE_DIR}/do_patch.sh -p ${CMAKE_SOURCE_DIR}/cmake/fft2d/fft2d.patch
-            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+    fetch_url(NAME fft2d
+              SRC_URL https://storage.googleapis.com/mirror.tensorflow.org/github.com/petewarden/OouraFFT/archive/v1.0.tar.gz
+              HASH SHA256=5f4dabc2ae21e1f537425d58a49cdca1c49ea11db0d6271e2a4b27e9697548eb
+              PATCH
+              NO_OVERRIDE
     )
-    list(APPEND TFL_DEPENDS ${EPA})
+    configure_target(NAME fft2d
+                     NO_FIND
+    )
+    set(ff2d_DIR "${CMAKE_BINARY_DIR}" CACHE PATH "" FORCE)
 endif()
