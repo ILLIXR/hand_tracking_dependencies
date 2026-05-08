@@ -19,7 +19,7 @@ if(tfl-XNNPACK${LIBRARY_POSTFIX}_FOUND)
 else()
     include(cmake/fp16_headers.cmake)
 
-    fetch_git(NAME tfl-XNNPACK
+    fetch_git(NAME tfl-XNNPACK${LIBRARY_POSTFIX}
               REPO https://github.com/ILLIXR/XNNPACK.git
               TAG f8918b650876748517c7a5dd9b07b7f87bfe7d15
               NO_OVERRIDE
@@ -44,11 +44,11 @@ else()
     set(XNNPACK_ENABLE_ARM_DOTPROD OFF CACHE BOOL "" FORCE)
     set(XNNPACK_ENABLE_ARM_I8MM OFF CACHE BOOL "" FORCE)
 
-    configure_target(NAME tfl-XNNPACK
+    configure_target(NAME tfl-XNNPACK${LIBRARY_POSTFIX}
                      NO_FIND
     )
-    set(tfl-XNNPACK_DIR "${CMAKE_BINARY_DIR}" CACHE PATH "" FORCE)
-
+    set(tfl-XNNPACK${LIBRARY_POSTFIX}_DIR "${CMAKE_BINARY_DIR}" CACHE PATH "" FORCE)
+    set(tfl-XNNPACK${LIBRARY_POSTFIX}_SOURCE_DIR "${tfl-XNNPACK_SOURCE_DIR}" CACHE PATH "" FORCE)
     unset(XNNPACK_BUILD_LIBRARY CACHE)
     unset(XNNPACK_BUILD_TESTS CACHE)
     unset(XNNPACK_BUILD_BENCHMARKS CACHE)
@@ -67,4 +67,6 @@ else()
     unset(XNNPACK_ENABLE_ARM_BF16 CACHE)
     unset(XNNPACK_ENABLE_ARM_DOTPROD CACHE)
     unset(XNNPACK_ENABLE_ARM_I8MM CACHE)
+    unset(tfl-XNNPACK_SOURCE_DIR CACHE)
+    unset(tfl-XNNPACK_DIR CACHE)
 endif()
