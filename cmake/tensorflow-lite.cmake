@@ -1,6 +1,6 @@
-set(TFLIBRARY_POSTFIX ${LIBRARY_POSTFIX})
+set(TFLIBRARY_POSTFIX ${LIBRARY_POSTFIX} CACHE STRING "" FORCE)
 if(ENABLE_GPU)
-    set(TFLIBRARY_POSTFIX "${TFLIBRARY_POSTFIX}-gpu")
+    set(TFLIBRARY_POSTFIX "${TFLIBRARY_POSTFIX}-gpu" CACHE STRING "" FORCE)
 endif()
 find_package(tensorflow-lite${TFLIBRARY_POSTFIX} QUIET CONFIG)
 if(tensorflow-lite${TFLIBRARY_POSTFIX}_FOUND)
@@ -8,7 +8,7 @@ if(tensorflow-lite${TFLIBRARY_POSTFIX}_FOUND)
 else()
     fetch_git(NAME tensorflow-lite${TFLIBRARY_POSTFIX}
               REPO https://github.com/ILLIXR/tensorflow-lite
-              TAG 892dc20d59a894ed72b55bc2be756e0989bdc657
+              TAG cdef8ca128586de113858b81421b0ceea4c72bb0
               NO_OVERRIDE
     )
     set(TFLITE_ENABLE_INSTALL ON CACHE BOOL "" FORCE)
