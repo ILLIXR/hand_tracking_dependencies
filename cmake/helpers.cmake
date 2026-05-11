@@ -1,14 +1,14 @@
-function(fetch_git)
+function(ht_fetch_git)
     set(options PATCH RECURSE NO_OVERRIDE NO_SHALLOW)
     set(oneValueArgs NAME REPO TAG SUBDIR OVERRIDE_UPDATE OVERRIDE_BUILD)
     cmake_parse_arguments(fetch "${options}" "${oneValueArgs}" "" ${ARGV})
 
     if(NOT fetch_NAME)
-        message(FATAL_ERROR "Name must be specified in calls to fetch_git.")
+        message(FATAL_ERROR "Name must be specified in calls to ht_fetch_git.")
     elseif(NOT fetch_REPO)
-        message(FATAL_ERROR "REPO must be specified in calls to fetch_git.")
+        message(FATAL_ERROR "REPO must be specified in calls to ht_fetch_git.")
     elseif(NOT fetch_TAG)
-        message(FATAL_ERROR "TAG must be specified in calls to fetch_git.")
+        message(FATAL_ERROR "TAG must be specified in calls to ht_fetch_git.")
     endif()
 
     set(FCD_ARGS
@@ -48,17 +48,17 @@ function(fetch_git)
     )
 endfunction()
 
-function(fetch_url)
+function(ht_fetch_url)
     set(options PATCH NO_OVERRIDE)
     set(oneValueArgs NAME SRC_URL HASH)
     cmake_parse_arguments(fetch "${options}" "${oneValueArgs}" "" ${ARGV})
 
     if(NOT fetch_NAME)
-        message(FATAL_ERROR "Name must be specified in calls to fetch_git.")
+        message(FATAL_ERROR "Name must be specified in calls to ht_fetch_git.")
     elseif(NOT fetch_SRC_URL)
-        message(FATAL_ERROR "SRC_URL must be specified in calls to fetch_git.")
+        message(FATAL_ERROR "SRC_URL must be specified in calls to ht_fetch_git.")
     elseif(NOT fetch_HASH)
-        message(FATAL_ERROR "HASH must be specified in calls to fetch_git.")
+        message(FATAL_ERROR "HASH must be specified in calls to ht_fetch_git.")
     endif()
 
     set(FCD_ARGS
@@ -81,13 +81,13 @@ function(fetch_url)
     )
 endfunction()
 
-macro(configure_target)
+macro(ht_configure_target)
     set(options MATCH_BUILD_TYPE NO_FIND USE_PKG_CONF)
     set(oneValueArgs NAME VERSION PKG_CONF)
     cmake_parse_arguments(_config "${options}" "${oneValueArgs}" "" ${ARGV})
 
     if(NOT _config_NAME)
-        message(FATAL_ERROR "Name must be specified in calls to fetch_git.")
+        message(FATAL_ERROR "Name must be specified in calls to ht_configure_target")
     endif()
 
     if(_config_USE_PKG_CONF AND NOT _config_PKG_CONF)

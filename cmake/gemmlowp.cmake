@@ -19,12 +19,12 @@ find_package(gemmlowp QUIET CONFIG)
 if (gemmlowp_FOUND)
     report_found(gemmlowp "")
 else()
-    fetch_git(NAME gemmlowp
-              REPO https://github.com/google/gemmlowp
-              TAG 16e8662c34917be0065110bfcd9cc27d30f52fdf
-              SUBDIR contrib
+    ht_fetch_git(NAME gemmlowp
+                 REPO https://github.com/google/gemmlowp
+                 TAG 16e8662c34917be0065110bfcd9cc27d30f52fdf
+                 SUBDIR contrib
     )
 
-    configure_target(NAME gemmlowp)
+    ht_configure_target(NAME gemmlowp)
 
 endif()

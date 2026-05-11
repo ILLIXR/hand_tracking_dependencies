@@ -19,18 +19,17 @@ find_package(absl QUIET CONFIG)
 if(absl_FOUND)
     report_found(absl "${absl_VERSION}")
 else()
-    fetch_GIT(NAME absl
-              REPO https://github.com/abseil/abseil-cpp
-              # Sync with tensorflow/third_party/absl/workspace.bzl
-              TAG 9687a8ea750bfcddf790372093245a1d041b21a3
-              NO_SHALLOW
+    ht_fetch_git(NAME absl
+                 REPO https://github.com/abseil/abseil-cpp
+                 TAG 9687a8ea750bfcddf790372093245a1d041b21a3
+                 NO_SHALLOW
     )
     set(ABSL_ENABLE_INSTALL ON CACHE BOOL "" FORCE)
     set(ABSL_USE_GOOGLETEST_HEAD OFF CACHE BOOL "" FORCE)
     set(ABSL_PROPAGATE_CXX_STD ON CACHE BOOL "" FORCE)
     set(ABSL_BUILD_TESTING OFF CACHE BOOL "" FORCE)
 
-    configure_target(NAME absl)
+    ht_configure_target(NAME absl)
 
     unset(ABSL_ENABLE_INSTALL CACHE)
     unset(ABSL_USE_GOOGLETEST_HEAD CACHE)

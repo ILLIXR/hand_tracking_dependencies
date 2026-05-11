@@ -19,14 +19,14 @@ find_package(fft2d QUIET CONFIG)
 if(fft2d_FOUND)
     report_found(fft2d "${fft2d_VERSION}")
 else()
-    fetch_url(NAME fft2d
-              SRC_URL https://storage.googleapis.com/mirror.tensorflow.org/github.com/petewarden/OouraFFT/archive/v1.0.tar.gz
-              HASH SHA256=5f4dabc2ae21e1f537425d58a49cdca1c49ea11db0d6271e2a4b27e9697548eb
-              PATCH
-              NO_OVERRIDE
+    ht_fetch_url(NAME fft2d
+                 SRC_URL https://storage.googleapis.com/mirror.tensorflow.org/github.com/petewarden/OouraFFT/archive/v1.0.tar.gz
+                 HASH SHA256=5f4dabc2ae21e1f537425d58a49cdca1c49ea11db0d6271e2a4b27e9697548eb
+                 PATCH
+                 NO_OVERRIDE
     )
-    configure_target(NAME fft2d
-                     NO_FIND
+    ht_configure_target(NAME fft2d
+                        NO_FIND
     )
     set(ff2d_DIR "${CMAKE_BINARY_DIR}" CACHE PATH "" FORCE)
 endif()

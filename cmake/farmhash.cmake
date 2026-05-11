@@ -21,15 +21,15 @@ find_package(farmhash QUIET CONFIG)
 if(farmhash_FOUND)
     report_found(farmhash "${farmhash_VERSION}")
 else()
-    fetch_git(NAME farmhash
-              REPO https://github.com/google/farmhash
-              TAG 0d859a811870d10f53a594927d0d0b97573ad06d
-              PATCH
-              NO_OVERRIDE
+    ht_fetch_git(NAME farmhash
+                 REPO https://github.com/google/farmhash
+                 TAG 0d859a811870d10f53a594927d0d0b97573ad06d
+                 PATCH
+                 NO_OVERRIDE
     )
 
-    configure_target(NAME farmhash
-                     NO_FIND
+    ht_configure_target(NAME farmhash
+                        NO_FIND
     )
     set(farmhash_DIR "${CMAKE_BINARY_DIR}" CACHE PATH "" FORCE)
 endif()

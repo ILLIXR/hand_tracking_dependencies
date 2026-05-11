@@ -17,15 +17,15 @@ find_package(ruy QUIET CONFIG)
 if(ruy_FOUND)
     report_found(ruy "${ruy_VERSION}")
 else()
-    fetch_git(NAME ruy
-              REPO https://github.com/ILLIXR/ruy.git
-              TAG ddfb111a5b2028f12fbe3eece52fc0b6c2a2ba84
-              NO_OVERRIDE
+    ht_fetch_git(NAME ruy
+                 REPO https://github.com/ILLIXR/ruy.git
+                 TAG ddfb111a5b2028f12fbe3eece52fc0b6c2a2ba84
+                 NO_OVERRIDE
     )
 
     set(RUY_ENABLE_INSTALL ON CACHE BOOL "" FORCE)
-    configure_target(NAME ruy
-                     NO_FIND
+    ht_configure_target(NAME ruy
+                        NO_FIND
     )
     set(ruy_DIR ${ruy_BINARY_DIR} CACHE PATH "" FORCE)
 endif()

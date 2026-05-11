@@ -20,14 +20,14 @@ find_package(NEON_2_SSE QUIET CONFIG)
 if(NEON_2_SSE_FOUND)
     report_found(neon2_sse "${NEON_2_SSE_VERSION}")
 else()
-    fetch_URL(NAME neon_2_sse
-              SRC_URL https://storage.googleapis.com/mirror.tensorflow.org/github.com/intel/ARM_NEON_2_x86_SSE/archive/a15b489e1222b2087007546b4912e21293ea86ff.tar.gz
-              HASH SHA256=019fbc7ec25860070a1d90e12686fc160cfb33e22aa063c80f52b363f1361e9d
-              NO_OVERRIDE
+    ht_fetch_URL(NAME neon_2_sse
+                 SRC_URL https://storage.googleapis.com/mirror.tensorflow.org/github.com/intel/ARM_NEON_2_x86_SSE/archive/a15b489e1222b2087007546b4912e21293ea86ff.tar.gz
+                 HASH SHA256=019fbc7ec25860070a1d90e12686fc160cfb33e22aa063c80f52b363f1361e9d
+                 NO_OVERRIDE
     )
 
-    configure_target(NAME neon_2_sse
-                     NO_FIND
+    ht_configure_target(NAME neon_2_sse
+                        NO_FIND
     )
 
     # NEON_2_SSE generates its Config.cmake at configure time but

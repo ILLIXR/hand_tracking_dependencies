@@ -7,10 +7,10 @@ find_package(${tfl_name} QUIET CONFIG)
 if(${tfl_name}_FOUND)
     report_found(tensorflow-lite "")
 else()
-    fetch_git(NAME ${tfl_name}
-              REPO https://github.com/ILLIXR/tensorflow-lite
-              TAG 5473ac0f929c415450f950c1c01f57cae11c2ca4
-              NO_OVERRIDE
+    ht_fetch_git(NAME ${tfl_name}
+                 REPO https://github.com/ILLIXR/tensorflow-lite
+                 TAG 5473ac0f929c415450f950c1c01f57cae11c2ca4
+                 NO_OVERRIDE
     )
     set(TFLITE_ENABLE_INSTALL ON CACHE BOOL "" FORCE)
     set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
@@ -18,8 +18,8 @@ else()
     set(TFLITE_ENABLE_RUY ON CACHE BOOL "" FORCE)
     set(TFLITE_ENABLE_NNAPI ON CACHE BOOL "" FORCE)
 
-    configure_target(NAME ${tfl_name}
-                     NO_FIND
+    ht_configure_target(NAME ${tfl_name}
+                        NO_FIND
     )
     unset(TFLITE_ENABLE_INSTALL CACHE)
     set(BUILD_SHARED_LIBS ON CACHE BOOL "" FORCE)

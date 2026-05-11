@@ -19,17 +19,17 @@ find_package(flatbuffers QUIET CONFIG)
 if(flatbuffers_FOUND)
     report_found(flatbuffers "${flatbuffers_VERSION}")
 else()
-    fetch_git(NAME flatbuffers
-              REPO https://github.com/google/flatbuffers
-              TAG e6463926479bd6b330cbcf673f7e917803fd5831
-              NO_SHALLOW
-              NO_OVERRIDE
+    ht_fetch_git(NAME flatbuffers
+                 REPO https://github.com/google/flatbuffers
+                 TAG e6463926479bd6b330cbcf673f7e917803fd5831
+                 NO_SHALLOW
+                 NO_OVERRIDE
     )
 
     set(FLATBUFFERS_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 
-    configure_target(NAME flatbuffers
-                     NO_FIND
+    ht_configure_target(NAME flatbuffers
+                        NO_FIND
     )
 
     unset(FLATBUFFERS_BUILD_TESTS CACHE)

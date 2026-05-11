@@ -5,16 +5,16 @@ endif()
 if(protobuf_FOUND)
     report_found(protobuf "${protobuf_VERSION}")
 else()
-    fetch_git(NAME protobuf
-              REPO https://github.com/protocolbuffers/protobuf.git
-              TAG v3.19.1
-              RECURSE
-              SUBDIR cmake
+    ht_fetch_git(NAME protobuf
+                 REPO https://github.com/protocolbuffers/protobuf.git
+                 TAG v3.19.1
+                 RECURSE
+                 SUBDIR cmake
     )
 
     set(protobuf_BUILD_TESTS OFF CACHE BOOL "Build tests" FORCE)
-    configure_target(NAME protobuf
-                     USE_PKG_CONF
+    ht_configure_target(NAME protobuf
+                        USE_PKG_CONF
     )
     unset(protobuf_BUILD_TESTS CACHE)
 endif()
