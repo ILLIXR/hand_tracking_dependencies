@@ -75,7 +75,7 @@ function(fetch_url)
     endif()
 
     report_build(${fetch_NAME})
-
+    message("CHECK ${FCD_ARGS}")
     FetchContent_Declare(${fetch_NAME}
                          ${FCD_ARGS}
     )
