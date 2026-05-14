@@ -51,9 +51,16 @@ if(neon_2_sse_POPULATED)
 endif()
 
 # Installed-package mode
-if(EXISTS \"\${CMAKE_CURRENT_LIST_DIR}/NEON_2_SSETargets.cmake\")
-    include(\"\${CMAKE_CURRENT_LIST_DIR}/NEON_2_SSETargets.cmake\")
+set(_neon_targets \"\${CMAKE_CURRENT_LIST_DIR}/NEON_2_SSETargets.cmake\")
+if(NOT EXISTS \"\${_neon_targets}\")
+    set(NEON_2_SSE_FOUND FALSE)
+    unset(_neon_targets)
+    return()
 endif()
+
+include(\"\${_neon_targets}\")
+unset(_neon_targets)
+set(NEON_2_SSE_FOUND TRUE)
 ")
     unset(_n2s_src)
 
