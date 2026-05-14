@@ -19,7 +19,7 @@ if(ruy_FOUND)
 else()
     ht_fetch_git(NAME ruy
                  REPO https://github.com/ILLIXR/ruy.git
-                 TAG ddfb111a5b2028f12fbe3eece52fc0b6c2a2ba84
+                 TAG 0d83ecee595017667a0328f33ca97a5d25c6430c
                  NO_OVERRIDE
     )
 
