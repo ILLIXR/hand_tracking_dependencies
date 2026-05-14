@@ -128,6 +128,8 @@ foreach(_fb_targets IN ITEMS FlatBuffersTargets FlatcTargets FlatBuffersSharedTa
     set(_fb_file "${CMAKE_CURRENT_LIST_DIR}/${_fb_targets}.cmake")
     if(EXISTS "${_fb_file}")
         include("${_fb_file}")
+    else()
+        set(flatbuffers_FOUND FALSE)
     endif()
 endforeach()
 unset(_fb_targets)
