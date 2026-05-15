@@ -9,7 +9,7 @@ if(${tfl_name}_FOUND)
 else()
     ht_fetch_git(NAME ${tfl_name}
                  REPO https://github.com/ILLIXR/tensorflow-lite
-                 TAG 235d485193c29e1f398d89746465d3449a160270
+                 TAG 63eef990259a54213c30e0de2c592df8c5dc4bf3
                  NO_OVERRIDE
     )
     set(TFLITE_ENABLE_INSTALL ON CACHE BOOL "" FORCE)
